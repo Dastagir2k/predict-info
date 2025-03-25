@@ -1,3 +1,5 @@
+import { GetServerSideProps } from "next";
+
 const getPredictedAge = async (name: string) => {
   const res = await fetch(`https://api.agify.io?name=${name}`);
   return res.json();
@@ -13,18 +15,16 @@ const getPredictedNationality = async (name: string) => {
   return res.json();
 };
 
-interface Params {
+interface PageProps {
   params: { name: string };
 }
 
-async function Prediction({ params }: Params) {
-  const ageData = getPredictedAge(params.name);
-  const genderData = getPredictedGender(params.name);
-  const nationalityData = getPredictedNationality(params.name);
+async function Prediction({ params }: PageProps) {
+  // Ensure all promises are awaited properly
   const [age, gender, nationality] = await Promise.all([
-    ageData,
-    genderData,
-    nationalityData,
+    getPredictedAge(params.name),
+    getPredictedGender(params.name),
+    getPredictedNationality(params.name),
   ]);
 
   return (
@@ -34,13 +34,13 @@ async function Prediction({ params }: Params) {
           Personal Info
         </div>
         <div className="block mt-1 text-lg leading-tight font-medium text-black">
-          Age: {age?.age}
+          Age: {age?.age ?? "Unknown"}
         </div>
         <div className="block mt-1 text-lg leading-tight font-medium text-black">
-          Gender: {gender?.gender}
+          Gender: {gender?.gender ?? "Unknown"}
         </div>
         <div className="block mt-1 text-lg leading-tight font-medium text-black">
-          Nationality: {nationality?.country[0]?.country_id}
+          Nationality: {nationality?.country?.[0]?.country_id ?? "Unknown"}
         </div>
       </div>
     </div>
