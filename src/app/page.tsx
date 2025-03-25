@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation"
 import { useState, FormEvent } from "react"
 
-const page = () => {
+const Page = () => {
   const [inputValue, setInputValue] = useState('')
   const { push } = useRouter()
 
@@ -35,4 +35,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
