@@ -1,5 +1,3 @@
-import { GetServerSideProps } from "next";
-
 const getPredictedAge = async (name: string) => {
   const res = await fetch(`https://api.agify.io?name=${name}`);
   return res.json();
@@ -15,12 +13,12 @@ const getPredictedNationality = async (name: string) => {
   return res.json();
 };
 
+// Correct type definition
 interface PageProps {
   params: { name: string };
 }
 
-async function Prediction({ params }: PageProps) {
-  // Ensure all promises are awaited properly
+const Prediction = async ({ params }: PageProps) => {
   const [age, gender, nationality] = await Promise.all([
     getPredictedAge(params.name),
     getPredictedGender(params.name),
@@ -45,6 +43,6 @@ async function Prediction({ params }: PageProps) {
       </div>
     </div>
   );
-}
+};
 
 export default Prediction;
