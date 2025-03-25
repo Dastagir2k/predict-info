@@ -17,11 +17,16 @@ const getPredictedCountry = async (name: string) => {
   return response.json();
 };
 
-export default async function Page({ params }: { params: Params }) {
-  const { name } = params; // Extract name from params
-  const ageData = await getPredictedAge(name);
-  const genderData = await getPredictedGender(name);
-  const countryData = await getPredictedCountry(name);
+// ✅ Make the component async
+export default async function Page({ params }: { params: { name: string } }) {
+  const { name } = params;
+
+  // ✅ Await API calls before rendering
+  const [ageData, genderData, countryData] = await Promise.all([
+    getPredictedAge(name),
+    getPredictedGender(name),
+    getPredictedCountry(name),
+  ]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -32,11 +37,11 @@ export default async function Page({ params }: { params: Params }) {
         <div className="space-y-4">
           <div className="flex justify-between text-lg">
             <span className="font-semibold">Age:</span>
-            <span>{ageData.age}</span>
+            <span>{ageData.age ?? "N/A"}</span>
           </div>
           <div className="flex justify-between text-lg">
             <span className="font-semibold">Gender:</span>
-            <span>{genderData.gender}</span>
+            <span>{genderData.gender ?? "N/A"}</span>
           </div>
           <div className="flex justify-between text-lg">
             <span className="font-semibold">Country:</span>
