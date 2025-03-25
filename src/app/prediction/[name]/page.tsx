@@ -1,58 +1,50 @@
-interface Params {
-  name: string;
-}
-
 const getPredictedAge = async (name: string) => {
-  const response = await fetch(`https://api.agify.io?name=${name}`);
-  return response.json();
+  const res = await fetch(`https://api.agify.io?name=${name}`);
+  return res.json();
 };
 
 const getPredictedGender = async (name: string) => {
-  const response = await fetch(`https://api.genderize.io?name=${name}`);
-  return response.json();
+  const res = await fetch(`https://api.genderize.io?name=${name}`);
+  return res.json();
 };
 
-const getPredictedCountry = async (name: string) => {
-  const response = await fetch(`https://api.nationalize.io?name=${name}`);
-  return response.json();
+const getPredictedNationality = async (name: string) => {
+  const res = await fetch(`https://api.nationalize.io?name=${name}`);
+  return res.json();
 };
 
-// ✅ Make the component async
-export default async function Page({ params }: { params: { name: string } }) {
-  const { name } = params;
+interface Params {
+  params: { name: string };
+}
 
-  // ✅ Await API calls before rendering
-  const [ageData, genderData, countryData] = await Promise.all([
-    getPredictedAge(name),
-    getPredictedGender(name),
-    getPredictedCountry(name),
+async function Prediction({ params }: Params) {
+  const ageData = getPredictedAge(params.name);
+  const genderData = getPredictedGender(params.name);
+  const nationalityData = getPredictedNationality(params.name);
+  const [age, gender, nationality] = await Promise.all([
+    ageData,
+    genderData,
+    nationalityData,
   ]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h1 className="text-3xl font-semibold text-center text-blue-600 mb-6">
-          Predicted Information for {name}
-        </h1>
-        <div className="space-y-4">
-          <div className="flex justify-between text-lg">
-            <span className="font-semibold">Age:</span>
-            <span>{ageData.age ?? "N/A"}</span>
-          </div>
-          <div className="flex justify-between text-lg">
-            <span className="font-semibold">Gender:</span>
-            <span>{genderData.gender ?? "N/A"}</span>
-          </div>
-          <div className="flex justify-between text-lg">
-            <span className="font-semibold">Country:</span>
-            <span>
-              {countryData.country.length > 0
-                ? countryData.country[0].country_id
-                : "N/A"}
-            </span>
-          </div>
+    <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-3 p-4">
+      <div className="p-8">
+        <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
+          Personal Info
+        </div>
+        <div className="block mt-1 text-lg leading-tight font-medium text-black">
+          Age: {age?.age}
+        </div>
+        <div className="block mt-1 text-lg leading-tight font-medium text-black">
+          Gender: {gender?.gender}
+        </div>
+        <div className="block mt-1 text-lg leading-tight font-medium text-black">
+          Nationality: {nationality?.country[0]?.country_id}
         </div>
       </div>
     </div>
   );
 }
+
+export default Prediction;
