@@ -1,51 +1,38 @@
-import { notFound } from "next/navigation";
+'use client'
+import { useRouter } from "next/navigation"
+import { useState, FormEvent } from "react"
 
-const getPredictedAge = async (name: string) => {
-  const res = await fetch(`https://api.agify.io?name=${name}`);
-  if (!res.ok) return null;
-  return res.json();
-};
+const Page = () => {
+  const [inputValue, setInputValue] = useState('')
+  const { push } = useRouter()
 
-const getPredictedGender = async (name: string) => {
-  const res = await fetch(`https://api.genderize.io?name=${name}`);
-  if (!res.ok) return null;
-  return res.json();
-};
-
-const getPredictedNationality = async (name: string) => {
-  const res = await fetch(`https://api.nationalize.io?name=${name}`);
-  if (!res.ok) return null;
-  return res.json();
-};
-
-// ✅ Use Next.js inferred type for params
-const Prediction = async ({ params }: { params: { name: string } }) => {
-  if (!params.name) return notFound(); // Handle missing params
-
-  const [age, gender, nationality] = await Promise.all([
-    getPredictedAge(params.name),
-    getPredictedGender(params.name),
-    getPredictedNationality(params.name),
-  ]);
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    push(`/prediction/${inputValue}`)
+    console.log(inputValue)
+  }
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-3 p-4">
-      <div className="p-8">
-        <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
-          Personal Info
-        </div>
-        <div className="block mt-1 text-lg leading-tight font-medium text-black">
-          Age: {age?.age ?? "Unknown"}
-        </div>
-        <div className="block mt-1 text-lg leading-tight font-medium text-black">
-          Gender: {gender?.gender ?? "Unknown"}
-        </div>
-        <div className="block mt-1 text-lg leading-tight font-medium text-black">
-          Nationality: {nationality?.country?.[0]?.country_id ?? "Unknown"}
-        </div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h1 className="text-2xl font-semibold text-center mb-6">Enter Name</h1>
+        <form onSubmit={handleSubmit}>
+          <input 
+            type="text" 
+            placeholder="Enter your name..." 
+            className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => setInputValue(e.target.value)} 
+          />
+          <button 
+            type="submit" 
+            className="w-full py-3 bg-red-500 cursor-pointer text-white rounded-md hover:bg-red-600 transition"
+          >
+            Submit
+          </button>
+        </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Prediction;
+export default Page
